@@ -1,0 +1,8 @@
+{
+  "name": "CRENVORO - Premium Creative Asset Marketplace",
+  "description": "CRENVORO is a premier creative asset marketplace for premium vectors, PSD templates, mockups, illustrations, fonts, and editable design resources.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

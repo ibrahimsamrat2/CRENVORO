@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <!-- Standalone Letter C Vector Mark for CRENVORO -->
+  <path
+    d="M 380 132
+       A 175.4 175.4 0 1 0 380 380
+       L 321 321
+       A 92 92 0 1 1 321 191
+       Z"
+    fill="#6C3BFF"
+  />
+  <rect
+    x="320"
+    y="228"
+    width="56"
+    height="56"
+    rx="10"
+    transform="rotate(45 348 256)"
+    fill="#6C3BFF"
+  />
+</svg>

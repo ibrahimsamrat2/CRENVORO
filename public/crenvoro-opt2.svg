@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="tile-bg-2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7928CA"/>
+      <stop offset="50%" stop-color="#6C3BFF"/>
+      <stop offset="100%" stop-color="#551FFF"/>
+    </linearGradient>
+    <filter id="drop-s2" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#37169A" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="116" fill="url(#tile-bg-2)"/>
+  <rect width="506" height="506" x="3" y="3" rx="113" stroke="#FFFFFF" stroke-opacity="0.2" stroke-width="3"/>
+
+  <g filter="url(#drop-s2)">
+    <path
+      d="M 390 168
+         C 358 116 304 82 240 82
+         C 144 82 66 160 66 256
+         C 66 352 144 430 240 430
+         C 304 430 358 396 390 344
+         L 320 296
+         C 300 330 272 350 240 350
+         C 188 350 146 308 146 256
+         C 146 204 188 162 240 162
+         C 272 162 300 182 320 216
+         Z"
+      fill="#FFFFFF"
+    />
+  </g>
+</svg>

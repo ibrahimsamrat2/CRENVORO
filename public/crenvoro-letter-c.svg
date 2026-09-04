@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="c-tile-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="50%" stop-color="#6C3BFF"/>
+      <stop offset="100%" stop-color="#551FFF"/>
+    </linearGradient>
+    <filter id="c-shadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#4F1EE3" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Squircle App Background Tile -->
+  <rect width="512" height="512" rx="116" fill="url(#c-tile-grad)"/>
+  <!-- Subtle Top Highlight Stroke -->
+  <rect width="506" height="506" x="3" y="3" rx="113" stroke="#FFFFFF" stroke-opacity="0.2" stroke-width="3"/>
+
+  <!-- Letter 'C' + Vector Diamond Symbol -->
+  <g filter="url(#c-shadow)">
+    <!-- Sculpted Letter C -->
+    <path
+      d="M 368 152
+         C 334 114 286 92 232 92
+         C 142 92 68 166 68 256
+         C 68 346 142 420 232 420
+         C 286 420 334 398 368 360
+         L 312 308
+         C 292 332 264 346 232 346
+         C 182 346 142 306 142 256
+         C 142 206 182 166 232 166
+         C 264 166 292 180 312 204
+         Z"
+      fill="#FFFFFF"
+    />
+
+    <!-- Signature Creative Diamond (echoing the previous icon's beloved rotated square!) -->
+    <rect
+      x="316"
+      y="224"
+      width="64"
+      height="64"
+      rx="10"
+      transform="rotate(45 348 256)"
+      fill="#FFFFFF"
+    />
+
+    <!-- Inner Accent Core Spark on the Diamond -->
+    <circle cx="348" cy="256" r="7" fill="#6C3BFF"/>
+  </g>
+</svg>

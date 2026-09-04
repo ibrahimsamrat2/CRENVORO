@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <defs>
+    <linearGradient id="c-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7928CA"/>
+      <stop offset="40%" stop-color="#6C3BFF"/>
+      <stop offset="100%" stop-color="#4F1EE3"/>
+    </linearGradient>
+    <filter id="c-glow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#2B0E80" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Squircle Base Tile in Signature Electric Purple -->
+  <rect width="512" height="512" rx="116" fill="url(#c-grad)"/>
+  <!-- Top Specular Highlight Stroke -->
+  <rect width="506" height="506" x="3" y="3" rx="113" stroke="#FFFFFF" stroke-opacity="0.22" stroke-width="3"/>
+
+  <g filter="url(#c-glow)">
+    <!-- Sculptural Letter C -->
+    <path
+      d="M 380 132
+         A 175 175 0 1 0 380 380
+         L 321 321
+         A 92 92 0 1 1 321 191
+         Z"
+      fill="#FFFFFF"
+    />
+
+    <!-- Signature Creative Diamond (The beloved previous icon symbol, now completing the Letter C!) -->
+    <rect
+      x="320"
+      y="228"
+      width="56"
+      height="56"
+      rx="10"
+      transform="rotate(45 348 256)"
+      fill="#FFFFFF"
+    />
+  </g>
+</svg>

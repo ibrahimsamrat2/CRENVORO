@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="tile-bg-3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7928CA"/>
+      <stop offset="50%" stop-color="#6C3BFF"/>
+      <stop offset="100%" stop-color="#551FFF"/>
+    </linearGradient>
+    <filter id="drop-s3" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#37169A" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="116" fill="url(#tile-bg-3)"/>
+  <rect width="506" height="506" x="3" y="3" rx="113" stroke="#FFFFFF" stroke-opacity="0.2" stroke-width="3"/>
+
+  <g filter="url(#drop-s3)">
+    <!-- Main Letter C with angled dynamic terminals -->
+    <path
+      d="M 384 144
+         C 348 102 296 78 238 78
+         C 140 78 60 158 60 256
+         C 60 354 140 434 238 434
+         C 296 434 348 410 384 368
+         L 336 320
+         C 310 348 276 364 238 364
+         C 178 364 130 316 130 256
+         C 130 196 178 148 238 148
+         C 276 148 310 164 336 192
+         Z"
+      fill="#FFFFFF"
+    />
+    <!-- In the aperture: Precision Rotated Diamond Spark (the original icon symbol!) -->
+    <rect
+      x="312"
+      y="224"
+      width="64"
+      height="64"
+      rx="12"
+      transform="rotate(45 344 256)"
+      fill="#FFFFFF"
+    />
+  </g>
+</svg>
