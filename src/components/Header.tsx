@@ -29,8 +29,9 @@ import { CrenvoroTile } from './CrenvoroLogo';
 interface HeaderProps {
   currentView?: string;
   onNavigate: (view: string, param?: string) => void;
-  onOpenAuth?: () => void;
-  onOpenAuthModal?: () => void;
+  onOpenAuth?: (mode?: 'login' | 'register', defaultRole?: 'buyer' | 'seller') => void;
+  onOpenAuthModal?: (mode?: 'login' | 'register', defaultRole?: 'buyer' | 'seller') => void;
+  onStartSelling?: () => void;
   onSearch?: (query: string) => void;
   onCategorySelect?: (cat: AssetCategory) => void;
   onOpenCartDrawer?: () => void;
@@ -42,6 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
   onNavigate,
   onOpenAuth,
   onOpenAuthModal,
+  onStartSelling,
   onSearch,
   onCategorySelect,
   onOpenCartDrawer,
@@ -49,7 +51,32 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const { cartItems, wishlistIds, setIsCartOpen } = useCartWishlist();
   const { currentUser, signOut, switchRole } = useAuth();
+  
   const handleAuthTrigger = onOpenAuthModal || onOpenAuth || (() => {});
+
+  const handleStartSellingClick = () => {
+    if (onStartSelling) {
+      onStartSelling();
+      return;
+    }
+    if (currentUser) {
+      onNavigate('seller-dashboard');
+    } else if (onOpenAuthModal) {
+      onOpenAuthModal('register', 'seller');
+    } else if (onOpenAuth) {
+      onOpenAuth('register', 'seller');
+    } else {
+      onNavigate('seller-dashboard');
+    }
+  };
+
+  const handleSignInClick = () => {
+    if (onOpenAuthModal) {
+      onOpenAuthModal('login', 'buyer');
+    } else if (onOpenAuth) {
+      onOpenAuth('login', 'buyer');
+    }
+  };
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -463,14 +490,17 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* User Account / Auth */}
             {/* Border Divider & Auth Actions */}
-            <div className="flex items-center gap-3 border-l pl-3 sm:pl-4 border-[#E5E7EB]">
+            <div className="flex items-center gap-2 sm:gap-3 border-l pl-2 sm:pl-4 border-[#E5E7EB]">
               {currentUser ? (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2">
                   <button
-                    onClick={() => onNavigate(currentUser.role === 'seller' ? 'seller-dashboard' : 'seller-dashboard')}
-                    className="hidden sm:inline-flex bg-[#6C3BFF] text-white px-4 py-1.5 rounded-full text-xs font-semibold shadow-lg shadow-[#6C3BFF33] hover:bg-[#5A31D6] transition-colors"
+                    id="header-start-selling-logged-in"
+                    onClick={handleStartSellingClick}
+                    className="bg-[#6C3BFF] text-white px-2.5 sm:px-4 py-1.5 rounded-full text-xs font-semibold shadow-md shadow-[#6C3BFF33] hover:bg-[#5A31D6] transition-all flex items-center gap-1.5 active:scale-95 whitespace-nowrap"
                   >
-                    {currentUser.role === 'seller' ? 'Seller Studio' : 'Start Selling'}
+                    <Store className="w-3.5 h-3.5" />
+                    <span className="hidden xs:inline">{currentUser.role === 'seller' ? 'Seller Studio' : 'Start Selling'}</span>
+                    <span className="xs:hidden">{currentUser.role === 'seller' ? 'Studio' : 'Sell'}</span>
                   </button>
 
                   <div ref={userMenuRef} className="relative">
@@ -589,19 +619,22 @@ export const Header: React.FC<HeaderProps> = ({
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5 sm:gap-3">
                   <button
                     id="header-login-btn"
-                    onClick={onOpenAuth}
-                    className="text-xs sm:text-sm font-semibold text-[#4B5563] hover:text-[#111827] px-1 py-1 transition-colors"
+                    onClick={handleSignInClick}
+                    className="text-xs sm:text-sm font-semibold text-[#4B5563] hover:text-[#111827] px-1.5 sm:px-2 py-1 transition-colors"
                   >
                     Sign In
                   </button>
                   <button
-                    onClick={onOpenAuth}
-                    className="bg-[#6C3BFF] text-white px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold shadow-lg shadow-[#6C3BFF33] hover:bg-[#5A31D6] transition-colors"
+                    id="header-start-selling-btn"
+                    onClick={handleStartSellingClick}
+                    className="bg-[#6C3BFF] text-white px-2.5 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold shadow-md shadow-[#6C3BFF33] hover:bg-[#5A31D6] transition-all flex items-center gap-1 sm:gap-1.5 active:scale-95 whitespace-nowrap"
                   >
-                    Start Selling
+                    <Store className="w-3.5 h-3.5 shrink-0" />
+                    <span className="hidden xs:inline">Start Selling</span>
+                    <span className="xs:hidden">Sell</span>
                   </button>
                 </div>
               )}
@@ -641,43 +674,76 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="xl:hidden bg-white border-b border-gray-200 px-4 pt-3 pb-6 space-y-3 animate-in slide-in-from-top duration-200">
+        <div className="xl:hidden bg-white border-b border-gray-200 px-4 pt-3 pb-6 space-y-4 animate-in slide-in-from-top duration-200 shadow-xl">
+          {/* Prominent Mobile Seller Hero Card */}
+          <div className="bg-gradient-to-br from-[#111827] via-[#1E1B4B] to-[#2E1065] p-4 rounded-2xl text-white shadow-lg relative overflow-hidden border border-purple-900/50">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold text-purple-300 uppercase tracking-wider flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+                CRENVORO Creator Hub
+              </span>
+              <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30 font-bold">
+                85% Payout
+              </span>
+            </div>
+            <h3 className="text-base font-black tracking-tight text-white mb-1">
+              {currentUser?.role === 'seller' ? 'Seller Studio Active' : 'Start Selling Your Digital Assets'}
+            </h3>
+            <p className="text-xs text-purple-200/80 mb-3 leading-relaxed">
+              {currentUser?.role === 'seller'
+                ? 'Manage your live products, upload new templates, and track payouts.'
+                : 'Monetize your vectors, PSD mockups, templates, and fonts with thousands of global buyers.'}
+            </p>
+            <button
+              id="mobile-menu-start-selling-btn"
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                handleStartSellingClick();
+              }}
+              className="w-full py-2.5 px-4 bg-[#6C3BFF] hover:bg-[#5A31D6] active:scale-98 text-white rounded-xl text-xs font-bold shadow-md shadow-purple-900/50 flex items-center justify-center gap-2 transition-all"
+            >
+              <Store className="w-4 h-4" />
+              <span>{currentUser?.role === 'seller' ? 'Open Seller Studio' : 'Start Selling on Mobile'}</span>
+              <ArrowRight className="w-3.5 h-3.5 ml-1" />
+            </button>
+          </div>
+
           <div className="grid grid-cols-2 gap-2 text-sm font-medium">
             <button
               onClick={() => {
                 onNavigate('home');
                 setIsMobileMenuOpen(false);
               }}
-              className="p-2.5 rounded-xl bg-gray-50 text-left hover:bg-purple-50 hover:text-[#6C3BFF]"
+              className="p-2.5 rounded-xl bg-gray-50 text-left hover:bg-purple-50 hover:text-[#6C3BFF] flex items-center gap-2"
             >
-              🏠 Home
+              <span>🏠</span> Home
             </button>
             <button
               onClick={() => {
                 onNavigate('shop');
                 setIsMobileMenuOpen(false);
               }}
-              className="p-2.5 rounded-xl bg-gray-50 text-left hover:bg-purple-50 hover:text-[#6C3BFF]"
+              className="p-2.5 rounded-xl bg-gray-50 text-left hover:bg-purple-50 hover:text-[#6C3BFF] flex items-center gap-2"
             >
-              🛍️ All Products
+              <span>🛍️</span> All Products
             </button>
             <button
               onClick={() => {
                 onNavigate('freebies');
                 setIsMobileMenuOpen(false);
               }}
-              className="p-2.5 rounded-xl bg-emerald-50 text-emerald-700 text-left"
+              className="p-2.5 rounded-xl bg-emerald-50 text-emerald-700 text-left flex items-center gap-2 font-semibold"
             >
-              🎁 Free Resources
+              <span>🎁</span> Free Resources
             </button>
             <button
               onClick={() => {
-                onNavigate('seller-dashboard');
                 setIsMobileMenuOpen(false);
+                handleStartSellingClick();
               }}
-              className="p-2.5 rounded-xl bg-purple-50 text-[#6C3BFF] text-left"
+              className="p-2.5 rounded-xl bg-purple-50 text-[#6C3BFF] text-left flex items-center gap-2 font-semibold"
             >
-              💼 Seller Hub
+              <span>💼</span> Seller Hub
             </button>
           </div>
 

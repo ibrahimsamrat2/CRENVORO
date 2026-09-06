@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Mail, Lock, User, Sparkles, Store, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCartWishlist } from '../context/CartWishlistContext';
@@ -8,18 +8,39 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   defaultRole?: 'buyer' | 'seller';
+  initialMode?: 'signin' | 'signup' | 'login' | 'register';
 }
 
-export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultRole = 'buyer' }) => {
+export const AuthModal: React.FC<AuthModalProps> = ({
+  isOpen,
+  onClose,
+  defaultRole = 'buyer',
+  initialMode = 'signin',
+}) => {
   const { signInWithGoogle, signInAsDemo } = useAuth();
   const { showToast } = useCartWishlist();
 
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+  const [mode, setMode] = useState<'signin' | 'signup'>(
+    initialMode === 'register' || initialMode === 'signup' ? 'signup' : 'signin'
+  );
   const [role, setRole] = useState<'buyer' | 'seller'>(defaultRole);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (initialMode === 'register' || initialMode === 'signup') {
+        setMode('signup');
+      } else if (initialMode === 'login' || initialMode === 'signin') {
+        setMode('signin');
+      }
+      if (defaultRole) {
+        setRole(defaultRole);
+      }
+    }
+  }, [isOpen, initialMode, defaultRole]);
 
   if (!isOpen) return null;
 

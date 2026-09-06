@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Home, Compass, Store, Heart, ShoppingBag } from 'lucide-react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartWishlistProvider, useCartWishlist } from './context/CartWishlistContext';
 import { Header } from './components/Header';
@@ -30,8 +31,8 @@ import { MOCK_PRODUCTS } from './data/mockProducts';
 import { Product, OrderRecord, AssetCategory } from './types';
 
 function MainMarketplaceApp() {
-  const { currentUser } = useAuth();
-  const { isCartDrawerOpen, setIsCartDrawerOpen } = useCartWishlist();
+  const { currentUser, switchRole } = useAuth();
+  const { isCartDrawerOpen, setIsCartDrawerOpen, cartItems, wishlistIds } = useCartWishlist();
 
   // Navigation State
   const [currentView, setCurrentView] = useState<string>('home');
@@ -45,6 +46,7 @@ function MainMarketplaceApp() {
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalInitialMode, setAuthModalInitialMode] = useState<'login' | 'register'>('login');
+  const [authModalDefaultRole, setAuthModalDefaultRole] = useState<'buyer' | 'seller'>('buyer');
   const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
 
   // Checkout order
@@ -78,9 +80,24 @@ function MainMarketplaceApp() {
     setViewParam(`cat:${category}`);
   };
 
-  const handleOpenAuth = (mode: 'login' | 'register' = 'login') => {
+  const handleOpenAuth = (
+    mode: 'login' | 'register' = 'login',
+    defaultRole: 'buyer' | 'seller' = 'buyer'
+  ) => {
     setAuthModalInitialMode(mode);
+    setAuthModalDefaultRole(defaultRole);
     setIsAuthModalOpen(true);
+  };
+
+  const handleStartSelling = () => {
+    if (currentUser) {
+      if (currentUser.role !== 'seller') {
+        switchRole('seller');
+      }
+      handleNavigate('seller-dashboard');
+    } else {
+      handleOpenAuth('register', 'seller');
+    }
   };
 
   // Seller actions
@@ -102,6 +119,8 @@ function MainMarketplaceApp() {
     ? products.find((p) => p.id === selectedProductId) || products[0]
     : products[0];
 
+  const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAFC] text-gray-900 selection:bg-purple-200 selection:text-purple-900 font-sans">
       {/* Header */}
@@ -111,18 +130,20 @@ function MainMarketplaceApp() {
         onSearch={handleSearch}
         onCategorySelect={handleCategorySelect}
         onOpenAuthModal={handleOpenAuth}
+        onStartSelling={handleStartSelling}
         onOpenCartDrawer={() => setIsCartDrawerOpen(true)}
         onOpenBrandAssets={() => setIsBrandModalOpen(true)}
       />
 
       {/* Main View Router */}
-      <main className="flex-1">
+      <main className="flex-1 pb-16 md:pb-0">
         {currentView === 'home' && (
           <HomePage
             products={products}
             onSelectProduct={handleSelectProduct}
             onCategorySelect={handleCategorySelect}
             onNavigate={handleNavigate}
+            onOpenSellerModal={handleStartSelling}
           />
         )}
 
@@ -229,6 +250,76 @@ function MainMarketplaceApp() {
         onOpenBrandAssets={() => setIsBrandModalOpen(true)}
       />
 
+      {/* Mobile Bottom Navigation Bar - Sticky, responsive, high touch target for mobile users */}
+      <nav
+        id="mobile-bottom-nav"
+        aria-label="Mobile Navigation"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200/90 px-2 py-1.5 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex items-center justify-around"
+      >
+        <button
+          id="mobile-bottom-nav-home"
+          onClick={() => handleNavigate('home')}
+          className={`flex flex-col items-center justify-center py-1 px-3 min-w-[54px] rounded-xl transition-colors active:scale-95 ${
+            currentView === 'home' ? 'text-[#6C3BFF] font-bold' : 'text-gray-500 hover:text-gray-900'
+          }`}
+        >
+          <Home className="w-5 h-5" />
+          <span className="text-[10px] mt-0.5">Home</span>
+        </button>
+
+        <button
+          id="mobile-bottom-nav-shop"
+          onClick={() => handleNavigate('shop')}
+          className={`flex flex-col items-center justify-center py-1 px-3 min-w-[54px] rounded-xl transition-colors active:scale-95 ${
+            currentView === 'shop' ? 'text-[#6C3BFF] font-bold' : 'text-gray-500 hover:text-gray-900'
+          }`}
+        >
+          <Compass className="w-5 h-5" />
+          <span className="text-[10px] mt-0.5">Shop</span>
+        </button>
+
+        {/* Elevated Center "Start Selling" Button */}
+        <button
+          id="mobile-nav-start-selling-btn"
+          onClick={handleStartSelling}
+          className="flex flex-col items-center justify-center -mt-3.5 bg-gradient-to-tr from-[#6C3BFF] to-[#8B5CF6] text-white py-2 px-4 rounded-2xl shadow-lg shadow-purple-600/35 active:scale-95 transition-transform"
+          aria-label="Start Selling"
+        >
+          <Store className="w-5 h-5" />
+          <span className="text-[10px] font-black mt-0.5 tracking-tight">Sell</span>
+        </button>
+
+        <button
+          id="mobile-bottom-nav-wishlist"
+          onClick={() => handleNavigate('wishlist')}
+          className={`relative flex flex-col items-center justify-center py-1 px-3 min-w-[54px] rounded-xl transition-colors active:scale-95 ${
+            currentView === 'wishlist' ? 'text-[#6C3BFF] font-bold' : 'text-gray-500 hover:text-gray-900'
+          }`}
+        >
+          <Heart className="w-5 h-5" />
+          {wishlistIds.length > 0 && (
+            <span className="absolute top-1 right-2.5 w-4 h-4 bg-purple-600 text-white rounded-full text-[9px] font-bold flex items-center justify-center">
+              {wishlistIds.length}
+            </span>
+          )}
+          <span className="text-[10px] mt-0.5">Saved</span>
+        </button>
+
+        <button
+          id="mobile-bottom-nav-cart"
+          onClick={() => setIsCartDrawerOpen(true)}
+          className="relative flex flex-col items-center justify-center py-1 px-3 min-w-[54px] rounded-xl text-gray-500 hover:text-gray-900 transition-colors active:scale-95"
+        >
+          <ShoppingBag className="w-5 h-5" />
+          {totalCartCount > 0 && (
+            <span className="absolute top-1 right-2.5 w-4 h-4 bg-[#6C3BFF] text-white rounded-full text-[9px] font-bold flex items-center justify-center">
+              {totalCartCount}
+            </span>
+          )}
+          <span className="text-[10px] mt-0.5">Cart</span>
+        </button>
+      </nav>
+
       {/* Global Modals & Slide-overs */}
       <CartDrawer
         isOpen={isCartDrawerOpen}
@@ -243,6 +334,7 @@ function MainMarketplaceApp() {
       <AuthModal
         isOpen={isAuthModalOpen}
         initialMode={authModalInitialMode}
+        defaultRole={authModalDefaultRole}
         onClose={() => setIsAuthModalOpen(false)}
       />
 

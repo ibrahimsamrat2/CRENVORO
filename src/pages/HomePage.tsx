@@ -30,7 +30,8 @@ interface HomePageProps {
   products: Product[];
   onSelectProduct: (id: string) => void;
   onNavigate: (view: string, param?: string) => void;
-  onOpenSellerModal: () => void;
+  onOpenSellerModal?: () => void;
+  onCategorySelect?: (category: string) => void;
 }
 
 export const HomePage: React.FC<HomePageProps> = ({
@@ -38,6 +39,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   onSelectProduct,
   onNavigate,
   onOpenSellerModal,
+  onCategorySelect,
 }) => {
   const { showToast } = useCartWishlist();
   const [heroSearch, setHeroSearch] = useState('');
@@ -587,7 +589,14 @@ export const HomePage: React.FC<HomePageProps> = ({
 
             <div className="pt-2">
               <button
-                onClick={() => onNavigate('seller-dashboard')}
+                id="homepage-become-seller-btn"
+                onClick={() => {
+                  if (onOpenSellerModal) {
+                    onOpenSellerModal();
+                  } else {
+                    onNavigate('seller-dashboard');
+                  }
+                }}
                 className="px-8 py-3.5 bg-[#6C3BFF] hover:bg-purple-600 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-purple-600/30 transition-transform active:scale-95 flex items-center gap-2"
               >
                 <span>Become a Seller</span>
