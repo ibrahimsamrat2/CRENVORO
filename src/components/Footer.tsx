@@ -48,10 +48,10 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenBrandAssets })
             {/* Social Icons */}
             <div className="pt-2 flex items-center gap-3">
               {[
-                { name: 'Behance', url: 'https://behance.net', icon: 'Be' },
+                { name: 'Behance', url: 'https://www.behance.net/ibrahimsamrat1', icon: 'Be' },
                 { name: 'Dribbble', url: 'https://dribbble.com', icon: 'Dr' },
                 { name: 'Instagram', url: 'https://instagram.com', icon: 'Ig' },
-                { name: 'LinkedIn', url: 'https://linkedin.com', icon: 'In' },
+                { name: 'LinkedIn', url: 'https://www.linkedin.com/in/ibrahim-samrat-35706b408?utm_source=share_via&utm_content=profile&utm_medium=member_ios', icon: 'In' },
                 { name: 'Facebook', url: 'https://facebook.com', icon: 'Fb' },
               ].map((soc) => (
                 <a
