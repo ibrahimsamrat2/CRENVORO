@@ -20,6 +20,7 @@ import {
   LayoutDashboard,
   Store,
   CheckCircle,
+  Zap,
 } from 'lucide-react';
 import { useCartWishlist } from '../context/CartWishlistContext';
 import { useAuth } from '../context/AuthContext';
@@ -49,7 +50,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenCartDrawer,
   onOpenBrandAssets,
 }) => {
-  const { cartItems, wishlistIds, setIsCartOpen } = useCartWishlist();
+  const { cartItems, wishlistIds, setIsCartOpen, subscription } = useCartWishlist();
   const { currentUser, signOut, switchRole } = useAuth();
   
   const handleAuthTrigger = onOpenAuthModal || onOpenAuth || (() => {});
@@ -444,6 +445,20 @@ export const Header: React.FC<HeaderProps> = ({
               Freebies
             </button>
             <button
+              id="nav-pricing"
+              onClick={() => onNavigate('pricing')}
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                currentView === 'pricing'
+                  ? 'text-[#6C3BFF] bg-purple-50/60 font-bold'
+                  : 'text-gray-700 hover:text-[#6C3BFF] hover:bg-gray-50'
+              }`}
+            >
+              <span>Pricing</span>
+              <span className="bg-amber-100 text-amber-900 text-[10px] font-black px-2 py-0.5 rounded-full border border-amber-300/60">
+                ⚡ $8/mo Deal
+              </span>
+            </button>
+            <button
               id="nav-about"
               onClick={() => onNavigate('about')}
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -458,6 +473,21 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-2">
+            {/* Active Subscription Credits Pill */}
+            {subscription?.status === 'active' && (
+              <button
+                id="header-credits-badge"
+                onClick={() => onNavigate('pricing')}
+                title="Your Subscription Credits (DepositPhotos Rollover Active)"
+                className="hidden lg:flex items-center gap-1.5 px-3 py-1 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-full text-xs font-black text-purple-900 transition-all cursor-pointer"
+              >
+                <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
+                <span>{subscription.totalAvailableCredits} Credits</span>
+                <span className="text-[10px] text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded-full font-bold">
+                  Rollover
+                </span>
+              </button>
+            )}
             {/* Wishlist Button */}
             <button
               id="header-wishlist-btn"
@@ -744,6 +774,15 @@ export const Header: React.FC<HeaderProps> = ({
               className="p-2.5 rounded-xl bg-purple-50 text-[#6C3BFF] text-left flex items-center gap-2 font-semibold"
             >
               <span>💼</span> Seller Hub
+            </button>
+            <button
+              onClick={() => {
+                onNavigate('pricing');
+                setIsMobileMenuOpen(false);
+              }}
+              className="p-2.5 rounded-xl bg-amber-50 text-amber-800 text-left flex items-center gap-2 font-bold col-span-2 border border-amber-200"
+            >
+              <span>⚡</span> 30 Downloads / Mo Plan ($8/mo Deal)
             </button>
           </div>
 

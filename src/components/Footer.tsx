@@ -104,6 +104,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenBrandAssets })
                   🎁 Free Resources
                 </button>
               </li>
+              <li>
+                <button onClick={() => onNavigate('pricing')} className="text-amber-300 hover:text-white font-bold transition-colors flex items-center gap-1">
+                  ⚡ Pricing & Rollover ($8/mo Deal)
+                </button>
+              </li>
             </ul>
           </div>
 
@@ -136,6 +141,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenBrandAssets })
               <li>
                 <button onClick={() => onNavigate('faq')} className="hover:text-white transition-colors">
                   Submission Guidelines
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onNavigate('pricing')} className="hover:text-white transition-colors">
+                  40% Creator Pool Economics
                 </button>
               </li>
             </ul>

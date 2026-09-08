@@ -56,6 +56,22 @@ export interface CartItem {
   price: number;
 }
 
+export interface UserSubscription {
+  planId: 'free' | 'monthly' | 'annual';
+  planName: string;
+  status: 'active' | 'inactive';
+  pricePerMonth: number;
+  billingPeriod: 'monthly' | 'annual';
+  totalBilled: number;
+  monthlyAllowance: number; // 30 downloads per month
+  remainingCredits: number; // current month remaining
+  rolloverCredits: number; // rolled over from previous months
+  totalAvailableCredits: number; // remainingCredits + rolloverCredits
+  startedAt: string;
+  renewsAt: string;
+  isLaunchPromo?: boolean;
+}
+
 export interface UserProfile {
   uid: string;
   email: string;
@@ -68,6 +84,7 @@ export interface UserProfile {
   createdAt?: string;
   marketingEmails?: boolean;
   productUpdates?: boolean;
+  subscription?: UserSubscription;
 }
 
 export interface OrderRecord {

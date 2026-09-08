@@ -17,6 +17,8 @@ import {
   Cpu,
   Info,
   Send,
+  Zap,
+  RotateCcw,
 } from 'lucide-react';
 import { Product, LicenseType, Review } from '../types';
 import { ProductCard } from '../components/ProductCard';
@@ -38,7 +40,15 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
   onNavigate,
   onNavigateCheckout,
 }) => {
-  const { addToCart, toggleWishlist, isInWishlist, showToast } = useCartWishlist();
+  const {
+    addToCart,
+    toggleWishlist,
+    isInWishlist,
+    showToast,
+    subscription,
+    downloadWithCredit,
+    openSubscriptionModal,
+  } = useCartWishlist();
   const { currentUser } = useAuth();
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -306,6 +316,62 @@ export const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
                 </div>
               </div>
             </div>
+
+            {/* Option 1: Pro Subscription with 30 Downloads/mo & Rollover Credits */}
+            {!product.isFree && (
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-[#111827] via-[#1E1B4B] to-[#2E1065] text-white space-y-3 shadow-md border border-purple-500/30">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-black uppercase tracking-wider text-purple-300 flex items-center gap-1.5">
+                    <Zap className="w-3.5 h-3.5 fill-amber-300 text-amber-300" />
+                    Option 1: Pro Subscription
+                  </span>
+                  <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded-full font-black border border-emerald-500/30">
+                    30 Downloads / Mo
+                  </span>
+                </div>
+
+                <div>
+                  <div className="text-sm font-black text-white">
+                    {subscription?.status === 'active' && subscription.totalAvailableCredits > 0
+                      ? `${subscription.totalAvailableCredits} Download Credits Available`
+                      : 'Included with Pro Membership ($8/mo)'}
+                  </div>
+                  <p className="text-[11px] text-purple-200/80 leading-relaxed mt-0.5">
+                    DepositPhotos-style rollover: unused downloads roll forward. Never lose what you pay for!
+                  </p>
+                </div>
+
+                {subscription?.status === 'active' && subscription.totalAvailableCredits > 0 ? (
+                  <button
+                    id="download-with-credit-btn"
+                    onClick={() => downloadWithCredit(product)}
+                    className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 active:scale-98 text-white rounded-xl font-black text-xs shadow-md shadow-emerald-900/30 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Download Now with 1 Credit</span>
+                  </button>
+                ) : (
+                  <button
+                    id="unlock-with-pro-btn"
+                    onClick={openSubscriptionModal}
+                    className="w-full py-3 bg-[#6C3BFF] hover:bg-[#5A31D6] active:scale-98 text-white rounded-xl font-black text-xs shadow-md shadow-purple-900/40 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Zap className="w-3.5 h-3.5 fill-amber-300 text-amber-300" />
+                    <span>Unlock with 30 Downloads/mo ($8/mo Launch Deal)</span>
+                  </button>
+                )}
+              </div>
+            )}
+
+            {!product.isFree && (
+              <div className="relative flex py-1 items-center">
+                <div className="flex-grow border-t border-gray-200"></div>
+                <span className="flex-shrink mx-3 text-[10px] font-extrabold uppercase tracking-wider text-gray-400">
+                  Option 2: Buy Single Asset On-Demand
+                </span>
+                <div className="flex-grow border-t border-gray-200"></div>
+              </div>
+            )}
 
             {/* License Option Selector */}
             {!product.isFree && (

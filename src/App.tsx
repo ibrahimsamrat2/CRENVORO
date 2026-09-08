@@ -26,6 +26,8 @@ import { ContactPage } from './pages/ContactPage';
 import { FAQPage } from './pages/FAQPage';
 import { LicensePage } from './pages/LicensePage';
 import { LegalPage } from './pages/LegalPage';
+import { PricingPage } from './pages/PricingPage';
+import { SubscriptionModal } from './components/SubscriptionModal';
 
 import { MOCK_PRODUCTS } from './data/mockProducts';
 import { Product, OrderRecord, AssetCategory } from './types';
@@ -230,6 +232,8 @@ function MainMarketplaceApp() {
 
         {currentView === 'about' && <AboutPage onNavigate={handleNavigate} />}
 
+        {currentView === 'pricing' && <PricingPage onNavigate={handleNavigate} />}
+
         {currentView === 'contact' && <ContactPage />}
 
         {currentView === 'faq' && <FAQPage onNavigate={handleNavigate} />}
@@ -351,6 +355,8 @@ function MainMarketplaceApp() {
         isOpen={isBrandModalOpen}
         onClose={() => setIsBrandModalOpen(false)}
       />
+
+      <SubscriptionModal />
 
       {/* Toast Notification */}
       <ToastContainer />

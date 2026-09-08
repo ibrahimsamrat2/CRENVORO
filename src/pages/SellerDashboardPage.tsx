@@ -622,6 +622,49 @@ export const SellerDashboardPage: React.FC<SellerDashboardPageProps> = ({
                 </div>
               </div>
 
+              {/* Platform Budget & Volume Economics Breakdown */}
+              <div className="bg-gradient-to-br from-[#111827] via-[#1E1B4B] to-[#2E1065] text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-purple-500/30 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black uppercase tracking-wider border border-emerald-500/30">
+                      40% Creator Royalty Pool Active
+                    </span>
+                    <h4 className="text-xl font-black text-white mt-1">
+                      The High-Volume Multiplier: Low Return × High Volume
+                    </h4>
+                  </div>
+                  <span className="text-xs text-purple-200">DepositPhotos Economics</span>
+                </div>
+
+                <p className="text-xs text-purple-200/90 leading-relaxed">
+                  In an era where graphic artists use AI, high per-image prices result in very few sales. Our high-value subscription model ($8/mo to $19/mo with 30 downloads and rollover credits) brings high volume. 
+                  Selling 3 files at $30 makes you $90. But having 10,000 subscription downloads from your catalog makes you <strong>$3,500/month recurring</strong>!
+                </p>
+
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-2 text-center text-xs">
+                  <div className="p-3 rounded-xl bg-white/5 border border-purple-400/20">
+                    <span className="text-emerald-400 font-black text-lg block">40%</span>
+                    <span className="text-[10px] text-purple-200 font-semibold block">Designer Royalties</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/5 border border-purple-400/20">
+                    <span className="text-blue-400 font-black text-lg block">20%</span>
+                    <span className="text-[10px] text-purple-200 font-semibold block">Marketing & Ads</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/5 border border-purple-400/20">
+                    <span className="text-amber-400 font-black text-lg block">10%</span>
+                    <span className="text-[10px] text-purple-200 font-semibold block">CDN & Operations</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/5 border border-purple-400/20">
+                    <span className="text-rose-400 font-black text-lg block">10%</span>
+                    <span className="text-[10px] text-purple-200 font-semibold block">Business Savings</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/5 border border-purple-400/20 col-span-2 sm:col-span-1">
+                    <span className="text-purple-400 font-black text-lg block">20%</span>
+                    <span className="text-[10px] text-purple-200 font-semibold block">Founder Profit</span>
+                  </div>
+                </div>
+              </div>
+
               {/* Request Payout Form */}
               <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200/80 shadow-xs space-y-4">
                 <h3 className="font-extrabold text-base text-gray-900">Request Withdrawal</h3>

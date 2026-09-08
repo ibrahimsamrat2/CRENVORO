@@ -12,6 +12,10 @@ import {
   CheckCircle,
   Clock,
   Trash2,
+  Zap,
+  RotateCcw,
+  Sparkles,
+  ArrowRight,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCartWishlist } from '../context/CartWishlistContext';
@@ -31,11 +35,20 @@ export const UserDashboardPage: React.FC<UserDashboardPageProps> = ({
   onSelectProduct,
 }) => {
   const { currentUser, updateProfile } = useAuth();
-  const { downloads, orders, wishlistIds, toggleWishlist, addToCart, showToast } =
-    useCartWishlist();
+  const {
+    downloads,
+    orders,
+    wishlistIds,
+    toggleWishlist,
+    addToCart,
+    showToast,
+    subscription,
+    cancelSubscription,
+    openSubscriptionModal,
+  } = useCartWishlist();
 
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'downloads' | 'orders' | 'wishlist' | 'settings'
+    'overview' | 'subscription' | 'downloads' | 'orders' | 'wishlist' | 'settings'
   >(initialTab as any);
 
   // Settings form states
@@ -114,6 +127,7 @@ export const UserDashboardPage: React.FC<UserDashboardPageProps> = ({
           <div className="bg-white rounded-3xl p-3 border border-gray-200/80 shadow-xs space-y-1 text-xs font-bold">
             {[
               { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+              { id: 'subscription', label: `Membership & Credits (${subscription?.totalAvailableCredits || 0})`, icon: Zap },
               { id: 'downloads', label: `My Downloads (${downloads.length})`, icon: Download },
               { id: 'orders', label: `Order History (${orders.length})`, icon: Receipt },
               { id: 'wishlist', label: `Saved Wishlist (${wishlistIds.length})`, icon: Heart },
@@ -144,6 +158,63 @@ export const UserDashboardPage: React.FC<UserDashboardPageProps> = ({
           {/* TAB 1: OVERVIEW */}
           {activeTab === 'overview' && (
             <div className="space-y-6">
+              {/* DepositPhotos-Style Rollover Credits Vault */}
+              <div className="bg-gradient-to-br from-[#111827] via-[#1E1B4B] to-[#2E1065] text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-purple-500/30 relative overflow-hidden">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
+                  <div>
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold uppercase tracking-wider mb-2 border border-purple-400/20">
+                      <Zap className="w-3.5 h-3.5 fill-amber-300 text-amber-300" />
+                      DepositPhotos Rollover Vault
+                    </div>
+                    <h2 className="text-2xl sm:text-3xl font-black text-white">
+                      {subscription.planName}
+                    </h2>
+                    <p className="text-xs text-purple-200/80 mt-1">
+                      Billing Cycle: <strong className="text-white">${subscription.pricePerMonth}/mo</strong> ({subscription.billingPeriod === 'annual' ? '$99/yr paid upfront' : '$19/mo'}) • Renews: {subscription.renewsAt}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={openSubscriptionModal}
+                      className="px-4 py-2.5 bg-[#6C3BFF] hover:bg-[#5A31D6] text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 active:scale-95"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Change Plan / Add Credits</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6">
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                    <span className="text-xs text-purple-200 font-medium block">Total Available Credits</span>
+                    <div className="text-3xl font-black text-emerald-400 mt-1">
+                      {subscription.totalAvailableCredits}
+                    </div>
+                    <span className="text-[11px] text-gray-400 block mt-0.5">Ready for instant download</span>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                    <span className="text-xs text-purple-200 font-medium block">Current Month Allowance</span>
+                    <div className="text-3xl font-black text-white mt-1">
+                      {subscription.remainingCredits} <span className="text-xs text-purple-300 font-normal">/ {subscription.monthlyAllowance}</span>
+                    </div>
+                    <span className="text-[11px] text-gray-400 block mt-0.5">Refreshes every 30 days</span>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                    <div className="flex items-center gap-1 text-xs text-amber-300 font-bold">
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Rollover Bank</span>
+                    </div>
+                    <div className="text-3xl font-black text-amber-300 mt-1">
+                      +{subscription.rolloverCredits}
+                    </div>
+                    <span className="text-[11px] text-amber-200/70 block mt-0.5">Unused credits rolled forward</span>
+                  </div>
+                </div>
+              </div>
+
               {/* Stat Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="p-5 bg-white rounded-3xl border border-gray-200/80 shadow-xs">
@@ -214,6 +285,107 @@ export const UserDashboardPage: React.FC<UserDashboardPageProps> = ({
                       </button>
                     </div>
                   ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB: MEMBERSHIP & CREDITS */}
+          {activeTab === 'subscription' && (
+            <div className="space-y-6">
+              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200/80 shadow-xs space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-gray-100">
+                  <div>
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100 text-[#6C3BFF] text-xs font-bold uppercase tracking-wider mb-2">
+                      <Zap className="w-3.5 h-3.5" />
+                      Active Membership
+                    </div>
+                    <h3 className="text-2xl font-black text-gray-900">{subscription.planName}</h3>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Status:{' '}
+                      <span className="font-bold text-emerald-600 uppercase">
+                        {subscription.status}
+                      </span>{' '}
+                      • {subscription.billingPeriod === 'annual' ? '$99/year' : '$19/month'} • Next Renewal:{' '}
+                      {subscription.renewsAt}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={openSubscriptionModal}
+                      className="px-4 py-2.5 bg-[#6C3BFF] hover:bg-[#5A31D6] text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 active:scale-95"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Switch Plan</span>
+                    </button>
+                    {subscription.status === 'active' && (
+                      <button
+                        onClick={cancelSubscription}
+                        className="px-3.5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-xl transition-all"
+                      >
+                        Cancel Auto-Renew
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Rollover Vault Details */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="p-5 rounded-2xl bg-purple-50/70 border border-purple-100">
+                    <span className="text-xs font-bold text-purple-700 block">Total Usable Credits</span>
+                    <div className="text-4xl font-black text-gray-900 mt-1">
+                      {subscription.totalAvailableCredits}
+                    </div>
+                    <p className="text-[11px] text-gray-500 mt-1">1 credit unlocks any asset in shop</p>
+                  </div>
+
+                  <div className="p-5 rounded-2xl bg-gray-50 border border-gray-200/80">
+                    <span className="text-xs font-bold text-gray-600 block">Current Month Allowance</span>
+                    <div className="text-4xl font-black text-gray-900 mt-1">
+                      {subscription.remainingCredits}
+                      <span className="text-sm font-normal text-gray-400"> / {subscription.monthlyAllowance}</span>
+                    </div>
+                    <p className="text-[11px] text-gray-500 mt-1">Unused credits roll forward</p>
+                  </div>
+
+                  <div className="p-5 rounded-2xl bg-amber-50/80 border border-amber-200/80">
+                    <div className="flex items-center gap-1 text-xs font-bold text-amber-800">
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Rollover Bank</span>
+                    </div>
+                    <div className="text-4xl font-black text-amber-900 mt-1">
+                      {subscription.rolloverCredits}
+                    </div>
+                    <p className="text-[11px] text-amber-700 mt-1">Saved from previous billing cycles</p>
+                  </div>
+                </div>
+
+                {/* DepositPhotos Rollover Policy Notice */}
+                <div className="p-4 rounded-2xl bg-gradient-to-r from-purple-50 via-amber-50/40 to-purple-50 border border-purple-200 flex items-start gap-3">
+                  <RotateCcw className="w-5 h-5 text-[#6C3BFF] shrink-0 mt-0.5" />
+                  <div className="text-xs space-y-1">
+                    <span className="font-extrabold text-gray-900 block">
+                      DepositPhotos-Style Rollover Guarantee Active
+                    </span>
+                    <p className="text-gray-600 leading-relaxed">
+                      Your unused download credits never expire while your membership is maintained. Take time off or bank up to 90+ credits across multiple months. Every single credit remains yours to download premium vectors, templates, and graphics.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Transparent Budget Allocation Callout */}
+                <div className="pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                  <div className="text-gray-600">
+                    Want to learn more about our <strong>40/20/10/10/20 financial allocation</strong>?
+                  </div>
+                  <button
+                    onClick={() => onNavigate('pricing')}
+                    className="text-[#6C3BFF] font-bold hover:underline flex items-center gap-1 shrink-0"
+                  >
+                    <span>View Pricing & Platform Budget</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               </div>
             </div>

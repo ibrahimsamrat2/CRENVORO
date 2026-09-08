@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { CartItem, DownloadItem, LicenseType, OrderRecord, Product } from '../types';
+import { CartItem, DownloadItem, LicenseType, OrderRecord, Product, UserSubscription } from '../types';
 import { useAuth } from './AuthContext';
 import { db } from '../firebase';
 import { collection, doc, setDoc, getDocs, query, where } from 'firebase/firestore';
@@ -43,7 +43,31 @@ interface CartWishlistContextType {
   toasts: ToastMessage[];
   showToast: (title: string, message: string, type?: 'success' | 'info' | 'error') => void;
   removeToast: (id: string) => void;
+  // Subscription & Rollover Credits
+  subscription: UserSubscription;
+  subscribeToPlan: (plan: 'monthly' | 'annual') => void;
+  cancelSubscription: () => void;
+  downloadWithCredit: (product: Product) => { success: boolean; message: string };
+  isSubscriptionModalOpen: boolean;
+  setIsSubscriptionModalOpen: (open: boolean) => void;
+  openSubscriptionModal: () => void;
 }
+
+const DEFAULT_SUBSCRIPTION: UserSubscription = {
+  planId: 'annual',
+  planName: 'Annual Pro (Launch Special 75% OFF)',
+  status: 'active',
+  pricePerMonth: 8,
+  billingPeriod: 'annual',
+  totalBilled: 99,
+  monthlyAllowance: 30,
+  remainingCredits: 28,
+  rolloverCredits: 14,
+  totalAvailableCredits: 42,
+  startedAt: '2026-02-01',
+  renewsAt: '2027-02-01',
+  isLaunchPromo: true,
+};
 
 const CartWishlistContext = createContext<CartWishlistContextType | undefined>(undefined);
 
@@ -113,7 +137,135 @@ export const CartWishlistProvider: React.FC<{ children: React.ReactNode }> = ({ 
     ];
   });
 
-  // Sync state to local storage
+  const [subscription, setSubscription] = useState<UserSubscription>(() => {
+    const saved = localStorage.getItem('is_subscription');
+    return saved ? JSON.parse(saved) : DEFAULT_SUBSCRIPTION;
+  });
+
+  const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('is_subscription', JSON.stringify(subscription));
+  }, [subscription]);
+
+  const openSubscriptionModal = () => setIsSubscriptionModalOpen(true);
+
+  const subscribeToPlan = (plan: 'monthly' | 'annual') => {
+    const now = new Date();
+    const renews = new Date();
+    if (plan === 'annual') {
+      renews.setFullYear(renews.getFullYear() + 1);
+    } else {
+      renews.setMonth(renews.getMonth() + 1);
+    }
+
+    const newSub: UserSubscription = {
+      planId: plan,
+      planName:
+        plan === 'annual'
+          ? 'Annual Pro (Launch Deal $8/mo - 75% OFF)'
+          : 'Monthly Pro ($19/mo)',
+      status: 'active',
+      pricePerMonth: plan === 'annual' ? 8 : 19,
+      billingPeriod: plan,
+      totalBilled: plan === 'annual' ? 99 : 19,
+      monthlyAllowance: 30,
+      remainingCredits: 30,
+      // DepositPhotos Rollover: any existing unused credits roll into the rollover bank!
+      rolloverCredits: subscription.status === 'active' 
+        ? subscription.rolloverCredits + Math.max(0, subscription.remainingCredits)
+        : 0,
+      totalAvailableCredits: 30 + (subscription.status === 'active' ? subscription.rolloverCredits + Math.max(0, subscription.remainingCredits) : 0),
+      startedAt: now.toISOString().split('T')[0],
+      renewsAt: renews.toISOString().split('T')[0],
+      isLaunchPromo: plan === 'annual',
+    };
+
+    setSubscription(newSub);
+    setIsSubscriptionModalOpen(false);
+
+    showToast(
+      '🎉 Membership Activated!',
+      plan === 'annual'
+        ? 'Welcome to Annual Pro! You received 30 downloads + DepositPhotos rollover protection.'
+        : 'Welcome to Monthly Pro! 30 downloads available this month.',
+      'success'
+    );
+  };
+
+  const cancelSubscription = () => {
+    setSubscription((prev) => ({
+      ...prev,
+      status: 'inactive',
+    }));
+    showToast(
+      'Subscription Updated',
+      'Auto-renew paused. You retain your remaining credits until the cycle ends.',
+      'info'
+    );
+  };
+
+  const downloadWithCredit = (product: Product): { success: boolean; message: string } => {
+    if (subscription.status !== 'active' || subscription.totalAvailableCredits <= 0) {
+      openSubscriptionModal();
+      return {
+        success: false,
+        message: 'No download credits available. Please subscribe or buy on-demand.',
+      };
+    }
+
+    // Deduct 1 credit: prioritize current month allowance, else rollover bank
+    setSubscription((prev) => {
+      let newRemaining = prev.remainingCredits;
+      let newRollover = prev.rolloverCredits;
+
+      if (newRemaining > 0) {
+        newRemaining -= 1;
+      } else if (newRollover > 0) {
+        newRollover -= 1;
+      }
+
+      return {
+        ...prev,
+        remainingCredits: newRemaining,
+        rolloverCredits: newRollover,
+        totalAvailableCredits: newRemaining + newRollover,
+      };
+    });
+
+    // Add to downloads
+    const userId = currentUser?.uid || 'subscriber-user';
+    const newDownload: DownloadItem = {
+      id: 'dl-cred-' + Math.random().toString(36).substring(2, 9),
+      userId,
+      productId: product.id,
+      productTitle: product.title,
+      category: product.category,
+      fileType: `${product.fileFormats.join(', ')} Archive`,
+      fileSize: product.fileSize || '135 MB',
+      downloadUrl: `#download-asset-${product.id}`,
+      purchaseDate: new Date().toISOString().split('T')[0],
+      thumbnail: product.thumbnail,
+    };
+
+    setDownloads((prev) => [newDownload, ...prev]);
+
+    // Save to Firestore if connected
+    if (firebaseUser && db && db.app) {
+      setDoc(doc(db, 'downloads', newDownload.id), newDownload).catch(() => {});
+    }
+
+    showToast(
+      '⚡ Instant Download Ready',
+      `"${product.title}" unlocked with 1 credit! (${subscription.totalAvailableCredits - 1} credits remaining)`,
+      'success'
+    );
+
+    return {
+      success: true,
+      message: `Downloaded successfully. ${subscription.totalAvailableCredits - 1} credits remaining.`,
+    };
+  };
   useEffect(() => {
     localStorage.setItem('is_cart', JSON.stringify(cartItems));
   }, [cartItems]);
@@ -362,6 +514,13 @@ export const CartWishlistProvider: React.FC<{ children: React.ReactNode }> = ({ 
         toasts,
         showToast,
         removeToast,
+        subscription,
+        subscribeToPlan,
+        cancelSubscription,
+        downloadWithCredit,
+        isSubscriptionModalOpen,
+        setIsSubscriptionModalOpen,
+        openSubscriptionModal,
       }}
     >
       {children}
