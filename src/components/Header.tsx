@@ -37,6 +37,7 @@ interface HeaderProps {
   onCategorySelect?: (cat: AssetCategory) => void;
   onOpenCartDrawer?: () => void;
   onOpenBrandAssets?: () => void;
+  onOpenWelcomePromo?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -49,6 +50,7 @@ export const Header: React.FC<HeaderProps> = ({
   onCategorySelect,
   onOpenCartDrawer,
   onOpenBrandAssets,
+  onOpenWelcomePromo,
 }) => {
   const { cartItems, wishlistIds, setIsCartOpen, subscription } = useCartWishlist();
   const { currentUser, signOut, switchRole } = useAuth();
@@ -82,6 +84,7 @@ export const Header: React.FC<HeaderProps> = ({
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -137,118 +140,38 @@ export const Header: React.FC<HeaderProps> = ({
       className={`sticky top-0 z-40 transition-all duration-200 ${
         isScrolled
           ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-200/80 py-2.5'
-          : 'bg-white border-b border-gray-100 py-3.5'
+          : 'bg-white border-b border-gray-100 py-3'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between gap-2 sm:gap-4">
           {/* Brand Logo */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               id="brand-logo-btn"
               onClick={() => onNavigate('home')}
-              className="flex items-center gap-2.5 text-left group focus:outline-none"
+              className="flex items-center gap-2 text-left group focus:outline-none"
             >
-              <CrenvoroTile className="w-9 h-9 shadow-md shadow-purple-950/20 group-hover:scale-105 transition-transform duration-200" />
+              <CrenvoroTile className="w-8 h-8 sm:w-9 sm:h-9 shadow-md shadow-purple-950/20 group-hover:scale-105 transition-transform duration-200 shrink-0" />
               <div className="flex flex-col">
-                <span className="text-xl font-black tracking-[-0.03em] text-[#111827] group-hover:text-[#6C3BFF] transition-colors leading-none">
+                <span className="text-lg sm:text-xl font-black tracking-[-0.03em] text-[#111827] group-hover:text-[#6C3BFF] transition-colors leading-none">
                   CRENVORO
                 </span>
-                <span className="text-[9px] font-bold text-[#6C3BFF] tracking-wider uppercase mt-0.5 hidden sm:inline-block">
+                <span className="text-[8px] sm:text-[9px] font-bold text-[#6C3BFF] tracking-wider uppercase mt-0.5 hidden sm:inline-block">
                   Creative Assets
                 </span>
               </div>
             </button>
-
-            {onOpenBrandAssets && (
-              <button
-                onClick={onOpenBrandAssets}
-                title="View CRENVORO Brand Identity & Download Vector Assets"
-                className="hidden lg:flex items-center gap-1 px-2.5 py-1 rounded-full bg-purple-50 text-[10px] font-bold text-[#6C3BFF] hover:bg-purple-100 transition-colors border border-purple-200/60"
-              >
-                <Sparkles className="w-2.5 h-2.5" /> Brand Assets
-              </button>
-            )}
           </div>
 
-          {/* Center Search Bar */}
-          <div
-            ref={searchContainerRef}
-            className="hidden md:flex flex-1 max-w-lg relative items-center"
-          >
-            <form onSubmit={handleSearchSubmit} className="w-full relative">
-              <div className="relative flex items-center">
-                <input
-                  id="global-search-input"
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => setIsSearchFocused(true)}
-                  placeholder="Search vectors, templates, mockups, fonts..."
-                  className="w-full pl-10 pr-24 py-2 text-sm bg-gray-50 hover:bg-gray-100/80 focus:bg-white border border-gray-200 focus:border-[#6C3BFF] rounded-full transition-all outline-none text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-purple-500/20"
-                />
-                <Search className="absolute left-3.5 top-2.5 w-4 h-4 text-gray-400" />
-                <button
-                  id="search-submit-btn"
-                  type="submit"
-                  className="absolute right-1.5 px-3 py-1 bg-[#6C3BFF] text-white text-xs font-semibold rounded-full hover:bg-purple-700 transition-colors"
-                >
-                  Search
-                </button>
-              </div>
-            </form>
-
-            {/* Search Suggestions Dropdown */}
-            {isSearchFocused && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="mb-3">
-                  <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-                    Popular Searches
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {['Flyer', 'Mockup', 'PSD', 'Social Media', '3D Icons', 'Serif Font', 'Branding Kit'].map(
-                      (tag) => (
-                        <button
-                          key={tag}
-                          type="button"
-                          onClick={() => {
-                            setSearchQuery(tag);
-                            onNavigate('shop', tag);
-                            setIsSearchFocused(false);
-                          }}
-                          className="px-2.5 py-1 text-xs bg-gray-100 hover:bg-purple-50 hover:text-[#6C3BFF] text-gray-700 rounded-lg transition-colors"
-                        >
-                          {tag}
-                        </button>
-                      )
-                    )}
-                  </div>
-                </div>
-                <div className="border-t border-gray-100 pt-2 flex items-center justify-between text-xs text-gray-500">
-                  <span>Press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border">Enter</kbd> to search</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onNavigate('shop');
-                      setIsSearchFocused(false);
-                    }}
-                    className="text-[#6C3BFF] font-medium hover:underline"
-                  >
-                    View all products →
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Center Navigation Links (Desktop) */}
-          <nav className="hidden xl:flex items-center space-x-1">
+          {/* Desktop Navigation Links */}
+          <nav className="hidden lg:flex items-center space-x-0.5 xl:space-x-1 shrink-0">
             <button
               id="nav-home"
               onClick={() => onNavigate('home')}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-2.5 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
                 currentView === 'home'
-                  ? 'text-[#6C3BFF] bg-purple-50/60'
+                  ? 'text-[#6C3BFF] bg-purple-50'
                   : 'text-gray-700 hover:text-[#6C3BFF] hover:bg-gray-50'
               }`}
             >
@@ -257,9 +180,9 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               id="nav-shop"
               onClick={() => onNavigate('shop')}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-2.5 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
                 currentView === 'shop'
-                  ? 'text-[#6C3BFF] bg-purple-50/60'
+                  ? 'text-[#6C3BFF] bg-purple-50'
                   : 'text-gray-700 hover:text-[#6C3BFF] hover:bg-gray-50'
               }`}
             >
@@ -271,8 +194,8 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 id="nav-categories-trigger"
                 onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1 ${
-                  isMegaMenuOpen ? 'text-[#6C3BFF] bg-purple-50/80' : 'text-gray-700 hover:text-[#6C3BFF] hover:bg-gray-50'
+                className={`px-2.5 py-1.5 rounded-lg text-sm font-semibold transition-colors flex items-center gap-1 ${
+                  isMegaMenuOpen ? 'text-[#6C3BFF] bg-purple-50' : 'text-gray-700 hover:text-[#6C3BFF] hover:bg-gray-50'
                 }`}
               >
                 Categories
@@ -285,7 +208,7 @@ export const Header: React.FC<HeaderProps> = ({
 
               {/* Advanced Category Mega Menu */}
               {isMegaMenuOpen && (
-                <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-[740px] bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 z-50 grid grid-cols-4 gap-6 animate-in fade-in duration-200">
+                <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-[720px] bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 z-50 grid grid-cols-4 gap-6 animate-in fade-in duration-200">
                   <div>
                     <div className="flex items-center gap-2 font-bold text-gray-900 text-sm mb-3 pb-2 border-b border-gray-100">
                       <Sparkles className="w-4 h-4 text-[#6C3BFF]" />
@@ -310,11 +233,6 @@ export const Header: React.FC<HeaderProps> = ({
                       <li>
                         <button onClick={() => handleCategoryClick('Graphics')} className="hover:text-[#6C3BFF] hover:translate-x-1 transition-all block text-left">
                           Textures & Backgrounds
-                        </button>
-                      </li>
-                      <li>
-                        <button onClick={() => handleCategoryClick('Graphics')} className="hover:text-[#6C3BFF] hover:translate-x-1 transition-all block text-left">
-                          Vector Elements & Badges
                         </button>
                       </li>
                     </ul>
@@ -343,12 +261,7 @@ export const Header: React.FC<HeaderProps> = ({
                       </li>
                       <li>
                         <button onClick={() => handleCategoryClick('Templates')} className="hover:text-[#6C3BFF] hover:translate-x-1 transition-all block text-left">
-                          Resumes & CVs
-                        </button>
-                      </li>
-                      <li>
-                        <button onClick={() => handleCategoryClick('Templates')} className="hover:text-[#6C3BFF] hover:translate-x-1 transition-all block text-left">
-                          Pitch Deck Presentations
+                          Pitch Decks
                         </button>
                       </li>
                     </ul>
@@ -372,17 +285,12 @@ export const Header: React.FC<HeaderProps> = ({
                       </li>
                       <li>
                         <button onClick={() => handleCategoryClick('Mockups')} className="hover:text-[#6C3BFF] hover:translate-x-1 transition-all block text-left">
-                          Device (iPhone & Mac)
+                          Devices (iPhone/Mac)
                         </button>
                       </li>
                       <li>
                         <button onClick={() => handleCategoryClick('Mockups')} className="hover:text-[#6C3BFF] hover:translate-x-1 transition-all block text-left">
                           Apparel & T-Shirts
-                        </button>
-                      </li>
-                      <li>
-                        <button onClick={() => handleCategoryClick('Mockups')} className="hover:text-[#6C3BFF] hover:translate-x-1 transition-all block text-left">
-                          Posters & Frames
                         </button>
                       </li>
                     </ul>
@@ -393,15 +301,10 @@ export const Header: React.FC<HeaderProps> = ({
                       <Type className="w-4 h-4 text-[#6C3BFF]" />
                       Fonts & More
                     </div>
-                    <ul className="space-y-2 text-xs text-gray-600 mb-4">
+                    <ul className="space-y-2 text-xs text-gray-600 mb-3">
                       <li>
                         <button onClick={() => handleCategoryClick('Fonts')} className="hover:text-[#6C3BFF] hover:translate-x-1 transition-all block text-left">
-                          Modern Serif Fonts
-                        </button>
-                      </li>
-                      <li>
-                        <button onClick={() => handleCategoryClick('Fonts')} className="hover:text-[#6C3BFF] hover:translate-x-1 transition-all block text-left">
-                          Clean Sans-Serif
+                          Serif & Sans-Serif
                         </button>
                       </li>
                       <li>
@@ -411,22 +314,22 @@ export const Header: React.FC<HeaderProps> = ({
                       </li>
                     </ul>
 
-                    {/* Featured Freebie Banner */}
-                    <div
-                      onClick={() => {
-                        setIsMegaMenuOpen(false);
-                        onNavigate('freebies');
-                      }}
-                      className="bg-purple-50 hover:bg-purple-100/80 p-3 rounded-xl cursor-pointer border border-purple-100 transition-colors"
-                    >
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-[#6C3BFF] mb-1">
-                        <Gift className="w-3.5 h-3.5" />
-                        100% Free Resources
-                      </div>
-                      <p className="text-[11px] text-gray-600 line-clamp-2">
-                        Grab verified free vectors, PSDs, and mockups.
-                      </p>
-                    </div>
+                    {/* Featured Brand Assets / Freebies */}
+                    {onOpenBrandAssets && (
+                      <button
+                        onClick={() => {
+                          setIsMegaMenuOpen(false);
+                          onOpenBrandAssets();
+                        }}
+                        className="w-full text-left bg-purple-50 hover:bg-purple-100 p-2.5 rounded-xl border border-purple-100 transition-colors block mb-2"
+                      >
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-[#6C3BFF]">
+                          <Sparkles className="w-3.5 h-3.5" />
+                          Brand Assets
+                        </div>
+                        <p className="text-[10px] text-gray-500 mt-0.5">Vector logos & identity</p>
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
@@ -435,35 +338,50 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               id="nav-freebies"
               onClick={() => onNavigate('freebies')}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+              className={`px-2.5 py-1.5 rounded-lg text-sm font-semibold transition-colors flex items-center gap-1.5 ${
                 currentView === 'freebies'
-                  ? 'text-[#6C3BFF] bg-purple-50/60'
+                  ? 'text-[#6C3BFF] bg-purple-50'
                   : 'text-gray-700 hover:text-[#6C3BFF] hover:bg-gray-50'
               }`}
             >
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               Freebies
             </button>
-            <button
-              id="nav-pricing"
-              onClick={() => onNavigate('pricing')}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
-                currentView === 'pricing'
-                  ? 'text-[#6C3BFF] bg-purple-50/60 font-bold'
-                  : 'text-gray-700 hover:text-[#6C3BFF] hover:bg-gray-50'
-              }`}
-            >
-              <span>Pricing</span>
-              <span className="bg-amber-100 text-amber-900 text-[10px] font-black px-2 py-0.5 rounded-full border border-amber-300/60">
-                ⚡ $8/mo Deal
-              </span>
-            </button>
+
+            <div className="flex items-center">
+              <button
+                id="nav-pricing"
+                onClick={() => onNavigate('pricing')}
+                className={`px-2.5 py-1.5 rounded-lg text-sm font-semibold transition-colors flex items-center gap-1.5 ${
+                  currentView === 'pricing'
+                    ? 'text-[#6C3BFF] bg-purple-50 font-bold'
+                    : 'text-gray-700 hover:text-[#6C3BFF] hover:bg-gray-50'
+                }`}
+              >
+                <span>Pricing</span>
+              </button>
+              {onOpenWelcomePromo ? (
+                <button
+                  id="nav-pricing-deal-btn"
+                  onClick={onOpenWelcomePromo}
+                  title="Claim 75% OFF Welcome Deal"
+                  className="bg-amber-100 hover:bg-amber-200 text-amber-900 text-[10px] font-black px-1.5 py-0.5 rounded-full border border-amber-300/80 cursor-pointer active:scale-95 transition-all ml-1 shadow-sm"
+                >
+                  $8/mo Deal
+                </button>
+              ) : (
+                <span className="bg-amber-100 text-amber-900 text-[10px] font-black px-1.5 py-0.5 rounded-full border border-amber-300/60 ml-1">
+                  $8/mo Deal
+                </span>
+              )}
+            </div>
+
             <button
               id="nav-about"
               onClick={() => onNavigate('about')}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`hidden 2xl:block px-2.5 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
                 currentView === 'about'
-                  ? 'text-[#6C3BFF] bg-purple-50/60'
+                  ? 'text-[#6C3BFF] bg-purple-50'
                   : 'text-gray-700 hover:text-[#6C3BFF] hover:bg-gray-50'
               }`}
             >
@@ -471,29 +389,98 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           </nav>
 
-          {/* Right Side Actions */}
-          <div className="flex items-center gap-2">
+          {/* Right Header: Search + Actions */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Desktop Compact Expandable Search */}
+            <div
+              ref={searchContainerRef}
+              className="hidden md:flex relative items-center"
+            >
+              <form onSubmit={handleSearchSubmit} className="relative">
+                <div className="relative flex items-center">
+                  <input
+                    id="global-search-input"
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => setIsSearchFocused(true)}
+                    placeholder="Search assets..."
+                    className="w-32 lg:w-40 xl:w-52 focus:w-56 xl:focus:w-68 pl-8 pr-3 py-1.5 text-xs lg:text-sm bg-gray-50 hover:bg-gray-100/80 focus:bg-white border border-gray-200 focus:border-[#6C3BFF] rounded-full transition-all duration-200 outline-none text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-purple-500/20"
+                  />
+                  <Search className="absolute left-2.5 top-2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+                </div>
+              </form>
+
+              {/* Search Suggestions Dropdown */}
+              {isSearchFocused && (
+                <div className="absolute top-full right-0 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="mb-3">
+                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">
+                      Popular Searches
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {['Flyer', 'Mockup', 'PSD', 'Social Media', '3D Icons', 'Serif Font', 'Branding Kit'].map(
+                        (tag) => (
+                          <button
+                            key={tag}
+                            type="button"
+                            onClick={() => {
+                              setSearchQuery(tag);
+                              onNavigate('shop', tag);
+                              setIsSearchFocused(false);
+                            }}
+                            className="px-2 py-0.5 text-xs bg-gray-100 hover:bg-purple-50 hover:text-[#6C3BFF] text-gray-700 rounded-lg transition-colors"
+                          >
+                            {tag}
+                          </button>
+                        )
+                      )}
+                    </div>
+                  </div>
+                  <div className="border-t border-gray-100 pt-2 flex items-center justify-between text-xs text-gray-500">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onNavigate('shop');
+                        setIsSearchFocused(false);
+                      }}
+                      className="text-[#6C3BFF] font-medium hover:underline text-xs"
+                    >
+                      View all products →
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Mobile Search Toggle Icon */}
+            <button
+              onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+              title="Search"
+              className="md:hidden p-2 text-gray-600 hover:text-[#6C3BFF] hover:bg-gray-100 rounded-full transition-colors"
+            >
+              {isMobileSearchOpen ? <X className="w-5 h-5 text-gray-500" /> : <Search className="w-5 h-5" />}
+            </button>
+
             {/* Active Subscription Credits Pill */}
             {subscription?.status === 'active' && (
               <button
                 id="header-credits-badge"
                 onClick={() => onNavigate('pricing')}
                 title="Your Subscription Credits (DepositPhotos Rollover Active)"
-                className="hidden lg:flex items-center gap-1.5 px-3 py-1 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-full text-xs font-black text-purple-900 transition-all cursor-pointer"
+                className="hidden sm:flex items-center gap-1 px-2.5 py-1 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-full text-xs font-black text-purple-900 transition-all cursor-pointer shrink-0"
               >
                 <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
-                <span>{subscription.totalAvailableCredits} Credits</span>
-                <span className="text-[10px] text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded-full font-bold">
-                  Rollover
-                </span>
+                <span>{subscription.totalAvailableCredits} <span className="hidden xl:inline">Credits</span></span>
               </button>
             )}
-            {/* Wishlist Button */}
+
+            {/* Wishlist Button (Hidden on smallest mobile to prevent crowding; accessible via bottom nav or drawer) */}
             <button
               id="header-wishlist-btn"
               onClick={() => onNavigate('wishlist')}
               title="Saved Wishlist"
-              className="relative p-2 rounded-full text-gray-600 hover:text-[#6C3BFF] hover:bg-purple-50/60 transition-colors"
+              className="hidden sm:flex relative p-2 rounded-full text-gray-600 hover:text-[#6C3BFF] hover:bg-purple-50/60 transition-colors shrink-0"
             >
               <Heart className="w-5 h-5" />
               {wishlistIds.length > 0 && (
@@ -508,7 +495,7 @@ export const Header: React.FC<HeaderProps> = ({
               id="header-cart-btn"
               onClick={() => setIsCartOpen(true)}
               title="Shopping Cart"
-              className="relative p-2 rounded-full text-gray-600 hover:text-[#6C3BFF] hover:bg-purple-50/60 transition-colors"
+              className="relative p-2 rounded-full text-gray-600 hover:text-[#6C3BFF] hover:bg-purple-50/60 transition-colors shrink-0"
             >
               <ShoppingBag className="w-5 h-5" />
               {totalCartCount > 0 && (
@@ -518,34 +505,32 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </button>
 
-            {/* User Account / Auth */}
-            {/* Border Divider & Auth Actions */}
-            <div className="flex items-center gap-2 sm:gap-3 border-l pl-2 sm:pl-4 border-[#E5E7EB]">
+            {/* User Account / Auth Actions */}
+            <div className="flex items-center gap-1.5 sm:gap-2 border-l pl-2 sm:pl-3 border-gray-200 shrink-0">
               {currentUser ? (
                 <div className="flex items-center gap-1.5 sm:gap-2">
                   <button
                     id="header-start-selling-logged-in"
                     onClick={handleStartSellingClick}
-                    className="bg-[#6C3BFF] text-white px-2.5 sm:px-4 py-1.5 rounded-full text-xs font-semibold shadow-md shadow-[#6C3BFF33] hover:bg-[#5A31D6] transition-all flex items-center gap-1.5 active:scale-95 whitespace-nowrap"
+                    className="hidden sm:flex bg-[#6C3BFF] text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm hover:bg-[#5A31D6] transition-all items-center gap-1.5 active:scale-95 whitespace-nowrap shrink-0"
                   >
                     <Store className="w-3.5 h-3.5" />
-                    <span className="hidden xs:inline">{currentUser.role === 'seller' ? 'Seller Studio' : 'Start Selling'}</span>
-                    <span className="xs:hidden">{currentUser.role === 'seller' ? 'Studio' : 'Sell'}</span>
+                    <span>{currentUser.role === 'seller' ? 'Studio' : 'Sell'}</span>
                   </button>
 
                   <div ref={userMenuRef} className="relative">
                     <button
                       id="user-profile-menu-trigger"
                       onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                      className="flex items-center gap-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
+                      className="flex items-center gap-1.5 p-0.5 rounded-full hover:ring-2 hover:ring-[#6C3BFF]/30 transition-all shrink-0"
                     >
                       <img
                         src={currentUser.photoURL || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'}
                         alt={currentUser.displayName}
                         referrerPolicy="no-referrer"
-                        className="w-8 h-8 rounded-full object-cover ring-2 ring-[#6C3BFF]/20"
+                        className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover ring-1 ring-gray-200"
                       />
-                      <ChevronDown className="w-3.5 h-3.5 text-gray-500 hidden sm:block" />
+                      <ChevronDown className="w-3 h-3 text-gray-400 hidden sm:block" />
                     </button>
 
                     {/* Profile Dropdown Menu */}
@@ -649,62 +634,64 @@ export const Header: React.FC<HeaderProps> = ({
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center gap-1.5 sm:gap-3">
+                <div className="flex items-center gap-1.5 sm:gap-2">
                   <button
                     id="header-login-btn"
                     onClick={handleSignInClick}
-                    className="text-xs sm:text-sm font-semibold text-[#4B5563] hover:text-[#111827] px-1.5 sm:px-2 py-1 transition-colors"
+                    className="text-xs sm:text-sm font-bold text-[#4B5563] hover:text-[#111827] px-2 py-1 transition-colors whitespace-nowrap"
                   >
                     Sign In
                   </button>
                   <button
                     id="header-start-selling-btn"
                     onClick={handleStartSellingClick}
-                    className="bg-[#6C3BFF] text-white px-2.5 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold shadow-md shadow-[#6C3BFF33] hover:bg-[#5A31D6] transition-all flex items-center gap-1 sm:gap-1.5 active:scale-95 whitespace-nowrap"
+                    className="hidden sm:inline-flex bg-[#6C3BFF] text-white px-3.5 py-1.5 rounded-full text-xs font-bold shadow-sm hover:bg-[#5A31D6] transition-all items-center gap-1 active:scale-95 whitespace-nowrap shrink-0"
                   >
-                    <Store className="w-3.5 h-3.5 shrink-0" />
-                    <span className="hidden xs:inline">Start Selling</span>
-                    <span className="xs:hidden">Sell</span>
+                    <Store className="w-3.5 h-3.5" />
+                    <span>Start Selling</span>
                   </button>
                 </div>
               )}
             </div>
 
-            {/* Mobile Menu Trigger */}
+            {/* Mobile Menu Trigger (Visible on screens < 1024px) */}
             <button
               id="mobile-menu-btn"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="xl:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100"
+              className="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors shrink-0"
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Search Bar */}
-        <div className="mt-3 md:hidden">
-          <form onSubmit={handleSearchSubmit} className="relative">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search vectors, mockups, fonts..."
-              className="w-full pl-9 pr-20 py-2 text-sm bg-gray-50 border border-gray-200 rounded-full focus:bg-white focus:border-[#6C3BFF] outline-none"
-            />
-            <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
-            <button
-              type="submit"
-              className="absolute right-1.5 px-3 py-1 bg-[#6C3BFF] text-white text-xs font-medium rounded-full"
-            >
-              Go
-            </button>
-          </form>
-        </div>
+        {/* Mobile Search Bar Dropdown */}
+        {isMobileSearchOpen && (
+          <div className="pt-2.5 pb-1 md:hidden animate-in slide-in-from-top-2 duration-150">
+            <form onSubmit={handleSearchSubmit} className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                autoFocus
+                placeholder="Search vectors, templates, mockups..."
+                className="w-full pl-9 pr-16 py-2 text-sm bg-gray-50 border border-gray-200 rounded-full focus:bg-white focus:border-[#6C3BFF] outline-none"
+              />
+              <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400 pointer-events-none" />
+              <button
+                type="submit"
+                className="absolute right-1.5 top-1 px-3 py-1 bg-[#6C3BFF] text-white text-xs font-semibold rounded-full"
+              >
+                Search
+              </button>
+            </form>
+          </div>
+        )}
       </div>
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="xl:hidden bg-white border-b border-gray-200 px-4 pt-3 pb-6 space-y-4 animate-in slide-in-from-top duration-200 shadow-xl">
+        <div className="lg:hidden bg-white border-b border-gray-200 px-4 pt-3 pb-6 space-y-4 animate-in slide-in-from-top duration-200 shadow-xl max-h-[85vh] overflow-y-auto">
           {/* Prominent Mobile Seller Hero Card */}
           <div className="bg-gradient-to-br from-[#111827] via-[#1E1B4B] to-[#2E1065] p-4 rounded-2xl text-white shadow-lg relative overflow-hidden border border-purple-900/50">
             <div className="flex items-center justify-between mb-2">
@@ -730,13 +717,37 @@ export const Header: React.FC<HeaderProps> = ({
                 setIsMobileMenuOpen(false);
                 handleStartSellingClick();
               }}
-              className="w-full py-2.5 px-4 bg-[#6C3BFF] hover:bg-[#5A31D6] active:scale-98 text-white rounded-xl text-xs font-bold shadow-md shadow-purple-900/50 flex items-center justify-center gap-2 transition-all"
+              className="w-full py-2.5 px-4 bg-[#6C3BFF] hover:bg-[#5A31D6] active:scale-98 text-white rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2 transition-all"
             >
               <Store className="w-4 h-4" />
-              <span>{currentUser?.role === 'seller' ? 'Open Seller Studio' : 'Start Selling on Mobile'}</span>
+              <span>{currentUser?.role === 'seller' ? 'Open Seller Studio' : 'Start Selling on CRENVORO'}</span>
               <ArrowRight className="w-3.5 h-3.5 ml-1" />
             </button>
           </div>
+
+          {/* If Not Logged In, Auth Action row in Mobile Drawer */}
+          {!currentUser && (
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  handleSignInClick();
+                }}
+                className="py-2.5 px-3 rounded-xl border border-gray-200 text-gray-800 text-xs font-bold text-center hover:bg-gray-50 transition-colors"
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  handleStartSellingClick();
+                }}
+                className="py-2.5 px-3 rounded-xl bg-purple-100 text-[#6C3BFF] text-xs font-bold text-center hover:bg-purple-200 transition-colors"
+              >
+                Create Account
+              </button>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-2 text-sm font-medium">
             <button
@@ -744,7 +755,7 @@ export const Header: React.FC<HeaderProps> = ({
                 onNavigate('home');
                 setIsMobileMenuOpen(false);
               }}
-              className="p-2.5 rounded-xl bg-gray-50 text-left hover:bg-purple-50 hover:text-[#6C3BFF] flex items-center gap-2"
+              className="p-2.5 rounded-xl bg-gray-50 text-left hover:bg-purple-50 hover:text-[#6C3BFF] flex items-center gap-2 font-medium"
             >
               <span>🏠</span> Home
             </button>
@@ -753,7 +764,7 @@ export const Header: React.FC<HeaderProps> = ({
                 onNavigate('shop');
                 setIsMobileMenuOpen(false);
               }}
-              className="p-2.5 rounded-xl bg-gray-50 text-left hover:bg-purple-50 hover:text-[#6C3BFF] flex items-center gap-2"
+              className="p-2.5 rounded-xl bg-gray-50 text-left hover:bg-purple-50 hover:text-[#6C3BFF] flex items-center gap-2 font-medium"
             >
               <span>🛍️</span> All Products
             </button>
@@ -762,7 +773,7 @@ export const Header: React.FC<HeaderProps> = ({
                 onNavigate('freebies');
                 setIsMobileMenuOpen(false);
               }}
-              className="p-2.5 rounded-xl bg-emerald-50 text-emerald-700 text-left flex items-center gap-2 font-semibold"
+              className="p-2.5 rounded-xl bg-emerald-50 text-emerald-800 text-left flex items-center gap-2 font-bold"
             >
               <span>🎁</span> Free Resources
             </button>
@@ -771,19 +782,41 @@ export const Header: React.FC<HeaderProps> = ({
                 setIsMobileMenuOpen(false);
                 handleStartSellingClick();
               }}
-              className="p-2.5 rounded-xl bg-purple-50 text-[#6C3BFF] text-left flex items-center gap-2 font-semibold"
+              className="p-2.5 rounded-xl bg-purple-50 text-[#6C3BFF] text-left flex items-center gap-2 font-bold"
             >
-              <span>💼</span> Seller Hub
+              <span>💼</span> Seller Studio
             </button>
             <button
               onClick={() => {
-                onNavigate('pricing');
                 setIsMobileMenuOpen(false);
+                if (onOpenWelcomePromo) {
+                  onOpenWelcomePromo();
+                } else {
+                  onNavigate('pricing');
+                }
               }}
-              className="p-2.5 rounded-xl bg-amber-50 text-amber-800 text-left flex items-center gap-2 font-bold col-span-2 border border-amber-200"
+              className="p-2.5 rounded-xl bg-amber-50 text-amber-900 text-left flex items-center justify-between font-bold col-span-2 border border-amber-200/80 active:scale-98 transition-all"
             >
-              <span>⚡</span> 30 Downloads / Mo Plan ($8/mo Deal)
+              <div className="flex items-center gap-2">
+                <span>⚡</span>
+                <span>30 Downloads / Mo Plan ($8/mo Deal)</span>
+              </div>
+              <span className="text-[10px] bg-amber-200/80 px-2 py-0.5 rounded-full font-black">
+                75% OFF
+              </span>
             </button>
+            {onOpenBrandAssets && (
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  onOpenBrandAssets();
+                }}
+                className="p-2.5 rounded-xl bg-purple-50/60 text-[#6C3BFF] text-left flex items-center gap-2 font-semibold col-span-2 border border-purple-100"
+              >
+                <Sparkles className="w-4 h-4 text-[#6C3BFF]" />
+                Brand Identity & Vector Assets
+              </button>
+            )}
           </div>
 
           <div className="border-t border-gray-100 pt-3">

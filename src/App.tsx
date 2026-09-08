@@ -28,6 +28,7 @@ import { LicensePage } from './pages/LicensePage';
 import { LegalPage } from './pages/LegalPage';
 import { PricingPage } from './pages/PricingPage';
 import { SubscriptionModal } from './components/SubscriptionModal';
+import { WelcomePromoModal } from './components/WelcomePromoModal';
 
 import { MOCK_PRODUCTS } from './data/mockProducts';
 import { Product, OrderRecord, AssetCategory } from './types';
@@ -50,6 +51,24 @@ function MainMarketplaceApp() {
   const [authModalInitialMode, setAuthModalInitialMode] = useState<'login' | 'register'>('login');
   const [authModalDefaultRole, setAuthModalDefaultRole] = useState<'buyer' | 'seller'>('buyer');
   const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
+  const [isWelcomePromoOpen, setIsWelcomePromoOpen] = useState(false);
+
+  // Auto-trigger welcome subscription & discount popup when traffic lands on the site
+  useEffect(() => {
+    const hasDismissed = sessionStorage.getItem('crenvoro_welcome_dismissed');
+    if (!hasDismissed) {
+      // 1.2s delay creates a natural, high-converting entrance experience
+      const timer = setTimeout(() => {
+        setIsWelcomePromoOpen(true);
+      }, 1200);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const handleCloseWelcomePromo = () => {
+    setIsWelcomePromoOpen(false);
+    sessionStorage.setItem('crenvoro_welcome_dismissed', 'true');
+  };
 
   // Checkout order
   const [lastCompletedOrder, setLastCompletedOrder] = useState<OrderRecord | null>(null);
@@ -124,7 +143,7 @@ function MainMarketplaceApp() {
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAFAFC] text-gray-900 selection:bg-purple-200 selection:text-purple-900 font-sans">
+    <div className="min-h-screen flex flex-col bg-[#FAFAFC] text-gray-900 selection:bg-purple-200 selection:text-purple-900 font-sans w-full max-w-full overflow-x-clip">
       {/* Header */}
       <Header
         currentView={currentView}
@@ -135,6 +154,7 @@ function MainMarketplaceApp() {
         onStartSelling={handleStartSelling}
         onOpenCartDrawer={() => setIsCartDrawerOpen(true)}
         onOpenBrandAssets={() => setIsBrandModalOpen(true)}
+        onOpenWelcomePromo={() => setIsWelcomePromoOpen(true)}
       />
 
       {/* Main View Router */}
@@ -357,6 +377,30 @@ function MainMarketplaceApp() {
       />
 
       <SubscriptionModal />
+
+      {/* Floating 75% Launch Deal Trigger Button */}
+      {!isWelcomePromoOpen && (
+        <button
+          id="floating-subscription-deal-btn"
+          onClick={() => setIsWelcomePromoOpen(true)}
+          title="Exclusive 75% OFF Launch Deal • 30 Downloads/mo for $8"
+          className="fixed bottom-20 sm:bottom-6 left-4 z-40 bg-gradient-to-r from-[#111827] via-[#1E1B4B] to-[#2E1065] text-white px-3.5 py-2 rounded-full shadow-2xl border border-purple-500/40 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 text-xs font-black cursor-pointer group"
+        >
+          <span className="flex h-2 w-2 relative">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+          </span>
+          <span className="text-amber-300">⚡ 75% OFF</span>
+          <span className="hidden sm:inline text-purple-200">30 Downloads / $8/mo</span>
+        </button>
+      )}
+
+      {/* Welcome Subscription & Discount Offer Modal */}
+      <WelcomePromoModal
+        isOpen={isWelcomePromoOpen}
+        onClose={handleCloseWelcomePromo}
+        onSubscribed={handleCloseWelcomePromo}
+      />
 
       {/* Toast Notification */}
       <ToastContainer />

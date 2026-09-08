@@ -115,8 +115,8 @@ export const HomePage: React.FC<HomePageProps> = ({
                 Premium Creative Marketplace
               </span>
 
-              <h1 className="text-4xl sm:text-6xl lg:text-[70px] leading-[1.08] font-extrabold text-[#111827] tracking-tight mb-6">
-                Unlimited Creativity <br />
+              <h1 className="text-3xl sm:text-5xl lg:text-[64px] leading-[1.1] font-extrabold text-[#111827] tracking-tight mb-6 break-words">
+                Unlimited Creativity <br className="hidden sm:inline" />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6C3BFF] to-[#8B5CF6]">
                   Starts Here.
                 </span>
@@ -130,9 +130,9 @@ export const HomePage: React.FC<HomePageProps> = ({
               <div className="mb-8">
                 <form
                   onSubmit={handleHeroSearch}
-                  className="p-1.5 bg-white rounded-full shadow-lg shadow-purple-900/5 border border-[#E5E7EB] flex items-center gap-2 max-w-lg"
+                  className="p-1.5 bg-white rounded-full shadow-lg shadow-purple-900/5 border border-[#E5E7EB] flex items-center gap-2 max-w-lg w-full"
                 >
-                  <div className="pl-4 text-gray-400">
+                  <div className="pl-3 sm:pl-4 text-gray-400">
                     <Search className="w-4 h-4 text-[#6C3BFF]" />
                   </div>
                   <input
@@ -140,11 +140,11 @@ export const HomePage: React.FC<HomePageProps> = ({
                     value={heroSearch}
                     onChange={(e) => setHeroSearch(e.target.value)}
                     placeholder="Search vectors, templates, mockups, fonts..."
-                    className="flex-1 text-xs sm:text-sm bg-transparent outline-none text-gray-800 placeholder-gray-400 py-2"
+                    className="flex-1 text-xs sm:text-sm bg-transparent outline-none text-gray-800 placeholder-gray-400 py-2 min-w-0"
                   />
                   <button
                     type="submit"
-                    className="px-5 py-2.5 bg-[#6C3BFF] hover:bg-[#5A31D6] text-white text-xs sm:text-sm font-semibold rounded-full shadow-md shadow-[#6C3BFF33] transition-all"
+                    className="px-4 sm:px-5 py-2 sm:py-2.5 bg-[#6C3BFF] hover:bg-[#5A31D6] text-white text-xs sm:text-sm font-semibold rounded-full shadow-md shadow-[#6C3BFF33] transition-all shrink-0"
                   >
                     Search
                   </button>
@@ -167,10 +167,10 @@ export const HomePage: React.FC<HomePageProps> = ({
               </div>
 
               {/* Action Buttons & Creator Social Proof */}
-              <div className="flex flex-wrap items-center gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 <button
                   onClick={() => onNavigate('shop')}
-                  className="bg-[#111827] text-white px-7 py-3.5 rounded-xl font-bold flex items-center gap-2 hover:bg-black transition-all shadow-lg shadow-black/10 text-sm"
+                  className="bg-[#111827] text-white px-7 py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-black transition-all shadow-lg shadow-black/10 text-sm"
                 >
                   <span>Explore Collection</span>
                   <ArrowRight className="w-4 h-4" />
@@ -204,7 +204,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             {/* Right Showcase Card with Artistic Flair 3D Tilt */}
             <div
               onClick={() => onNavigate('shop', 'Mockups')}
-              className="w-full sm:w-[380px] lg:w-[390px] h-[320px] bg-white rounded-3xl shadow-2xl border border-[#F1F5F9] p-2.5 lg:rotate-3 hover:rotate-0 transition-transform duration-300 relative z-10 cursor-pointer shrink-0"
+              className="w-full max-w-sm sm:w-[360px] lg:w-[380px] h-[300px] sm:h-[320px] bg-white rounded-3xl shadow-2xl border border-[#F1F5F9] p-2.5 lg:rotate-3 hover:rotate-0 transition-transform duration-300 relative z-10 cursor-pointer shrink-0 mx-auto lg:mx-0"
             >
               <div className="w-full h-full bg-[#F8FAFC] rounded-2xl overflow-hidden relative group">
                 <img
